@@ -53,10 +53,10 @@ public class MySQLSync extends AbstractDBSync implements DBSync {
         
         int count = 0;
         //List<String> idsList = new ArrayList<String>();
-        while (rs.next()) {
+        while(rs.next()) {
         	if ("insert".equals(rs.getString("action"))) {
         		sql.append("insert into ").append(jobInfo.getDestTable()).append(" (").append(jobInfo.getDestTableFields()).append(") values ");
-        		sql.append(rs.getString("action_sql")).append(";");
+        		sql.append(rs.getString("action_sql")).append(";");   
         	} else if ("delete".equals(rs.getString("action"))) {
         		//sqlDel.append("delete from ").append(jobInfo.getDestTable()).append(" where ").append(rs.getString("action_sql")).append(";");
         		sqlDel.append("delete from ").append(jobInfo.getDestTable()).append(" where ").append(jobInfo.getDestTableKey()).append(" in (").append(rs.getString("action_sql")).append(");");
@@ -67,10 +67,10 @@ public class MySQLSync extends AbstractDBSync implements DBSync {
             //    sql.append("'").append(rs.getString(fields[index])).append(index == (fields.length - 1) ? "'" : "',");
             //}
             //sql.append("),");
-        	//idsList.add(rs.getString("ids"));     
-        	if (count >=2) {
-        		break;
-        	}
+        	//idsList.add(rs.getString("ids"));   
+			/*
+			 * if (count >=2) { break; }
+			 */
         }
 
         if (rs != null) {
@@ -80,13 +80,15 @@ public class MySQLSync extends AbstractDBSync implements DBSync {
             pst.close();
         }
         if (sql.length() > 0) {
-            sql = sql.deleteCharAt(sql.length() - 1);
-            if ((!jobInfo.getDestTableUpdate().equals("")) && (!jobInfo.getDestTableKey().equals(""))) {
-                sql.append(" on duplicate key update ");
-                for (int index = 0; index < updateFields.length; index++) {
-                    sql.append(updateFields[index]).append("= values(").append(updateFields[index]).append(index == (updateFields.length - 1) ? ")" : "),");
-                }
-                sql.append(';');
+        	//sql存在读取数据读不完的情况
+            sql = sql.deleteCharAt(sql.length() - 1);     	
+            if ((!jobInfo.getDestTableUpdate().equals("")) && (!jobInfo.getDestTableKey().equals(""))) {           
+				  sql.append(" on duplicate key update ");
+				  for (int index = 0; index < updateFields.length; index++) {
+				  sql.append(updateFields[index]).append("= values(").append(updateFields[index
+				  ]).append(index == (updateFields.length - 1) ? ")" : "),"); }
+				  sql.append(';');
+				   
                 //return sql.toString(); //new StringBuffer("alter table ").append(destTable).append(" add constraint ").append(uniqueName).append(" unique (").append(destTableKey).append(");").append(sql.toString())
                         //.apend(";alter table ").append(destTable).append(" drop index ").append(uniqueName).toString();
             }
