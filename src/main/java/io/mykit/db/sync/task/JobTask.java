@@ -71,6 +71,7 @@ public class JobTask implements Job {
 
             DBSync dbHelper = DBSyncFactory.create(destDb.getDbtype());
             long start = new Date().getTime();
+            //装配sql语句
             String sql = dbHelper.assembleSQL(jobInfo.getSrcSql(), inConn, jobInfo);
             System.out.println(sql+"-----------");
             this.logger.info("组装SQL耗时: " + (new Date().getTime() - start) + "ms");
@@ -139,10 +140,9 @@ public class JobTask implements Job {
              		break;
              	}
              }
-             String ids = String.join(",", idsList);
-            
-             Statement  st=conn.createStatement();
-             int i=st.executeUpdate("delete from sync_police_config where p_id in (" + ids + ")");
+             String ids = String.join(",", idsList);            
+             Statement st = conn.createStatement();
+             st.executeUpdate("delete from sync_police_config where p_id in (" + ids + ")");
              this.logger.info("delete from sync_police_config where p_id in (" + ids + ")");
              st.close();
              conn.commit();

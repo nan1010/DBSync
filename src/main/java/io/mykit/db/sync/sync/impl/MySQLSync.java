@@ -46,9 +46,9 @@ public class MySQLSync extends AbstractDBSync implements DBSync {
         String destTable = jobInfo.getDestTable();
         String destTableKey = jobInfo.getDestTableKey();
         PreparedStatement pst = conn.prepareStatement(srcSql);
+        //执行源数据表查询语句
         ResultSet rs = pst.executeQuery();
-        StringBuffer sql = new StringBuffer();
-        
+        StringBuffer sql = new StringBuffer();   
         StringBuffer sqlDel = new StringBuffer();
         
         int count = 0;
