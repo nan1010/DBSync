@@ -135,7 +135,8 @@ public class JobTask implements Job {
         	 PreparedStatement pst = conn.prepareStatement(delsql);
              ResultSet rs = pst.executeQuery();
              while (rs.next()) {
-            	idsList.add(rs.getString("ids"));     
+            	idsList.add(rs.getString("ids")); 
+            	count++;
              	if (count >=2) {
              		break;
              	}

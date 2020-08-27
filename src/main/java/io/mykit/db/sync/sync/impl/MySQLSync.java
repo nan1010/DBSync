@@ -17,7 +17,7 @@ package io.mykit.db.sync.sync.impl;
 
 import io.mykit.db.sync.entity.JobInfo;
 import io.mykit.db.sync.sync.DBSync;
-//import io.mykit.db.sync.utils.Tool;
+import io.mykit.db.sync.utils.Tool;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
