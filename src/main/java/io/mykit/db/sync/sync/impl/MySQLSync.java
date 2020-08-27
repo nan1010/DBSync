@@ -17,15 +17,15 @@ package io.mykit.db.sync.sync.impl;
 
 import io.mykit.db.sync.entity.JobInfo;
 import io.mykit.db.sync.sync.DBSync;
-import io.mykit.db.sync.utils.Tool;
+//import io.mykit.db.sync.utils.Tool;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+//import java.util.ArrayList;
+//import java.util.List;
 
 /**
  * @author liuyazhuang
@@ -38,20 +38,20 @@ public class MySQLSync extends AbstractDBSync implements DBSync {
 
     @Override
     public String assembleSQL(String srcSql, Connection conn, JobInfo jobInfo) throws SQLException {
-        String uniqueName = Tool.generateString(6) + "_" + jobInfo.getName();
+        //String uniqueName = Tool.generateString(6) + "_" + jobInfo.getName();
         String[] fields = jobInfo.getDestTableFields().split(",");
         fields = this.trimArrayItem(fields);
         String[] updateFields = jobInfo.getDestTableUpdate().split(",");
         updateFields = this.trimArrayItem(updateFields);
-        String destTable = jobInfo.getDestTable();
-        String destTableKey = jobInfo.getDestTableKey();
+        //String destTable = jobInfo.getDestTable();
+        //String destTableKey = jobInfo.getDestTableKey();
         PreparedStatement pst = conn.prepareStatement(srcSql);
         //执行源数据表查询语句
         ResultSet rs = pst.executeQuery();
         StringBuffer sql = new StringBuffer();   
         StringBuffer sqlDel = new StringBuffer();
         
-        int count = 0;
+        //int count = 0;
         //List<String> idsList = new ArrayList<String>();
         while(rs.next()) {
         	if ("insert".equals(rs.getString("action"))) {
