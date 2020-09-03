@@ -28,8 +28,19 @@
         
         <job>
             <name>1</name>
-            <cron>0/2 * * * * ?</cron>
             <srcSql>select s.action, GROUP_CONCAT(s.p_id) ids, GROUP_CONCAT(s.action_sql) action_sql from (select * from sync_police_config  where dest_table='tb_gap_data') s GROUP BY s.action</srcSql>
+            <srcTable>sync_police_config</srcTable>
+            <srcTableFields>p_id, dest_table, action, action_sql</srcTableFields>
+            <destTable>tb_copy</destTable>
+            <destTableFields>id, data_type, data</destTableFields>
+            <destTableKey>id</destTableKey>
+            <destTableUpdate>id, data_type, data</destTableUpdate>
+        </job>
+        <job>
+            <name>2</name>
+            <srcSql>select s.action, GROUP_CONCAT(s.p_id) ids, GROUP_CONCAT(s.action_sql) action_sql from (select * from sync_police_config  where dest_table='tb_gap_data') s GROUP BY s.action</srcSql>
+            <srcTable>sync_police_config</srcTable>
+            <srcTableFields>p_id, dest_table, action, action_sql</srcTableFields>
             <destTable>tb_copy</destTable>
             <destTableFields>id, data_type, data</destTableFields>
             <destTableKey>id</destTableKey>

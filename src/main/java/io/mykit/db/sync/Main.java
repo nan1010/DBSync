@@ -15,10 +15,10 @@
  */
 package io.mykit.db.sync;
 
-import io.mykit.db.sync.build.DBSyncBuilder;
-import io.mykit.db.sync.utils.DateUtils;
+import io.mykit.db.sync.build.Task;
 import org.apache.log4j.Logger;
 
+import java.text.DateFormat;
 import java.util.Date;
 
 /**
@@ -28,14 +28,11 @@ import java.util.Date;
  * @version 1.0.0
  */
 public class Main {
+	private static Logger logger = Logger.getLogger(Task.class);
 
-    private static Logger logger = Logger.getLogger(DBSyncBuilder.class);
-
-    public static void main(String[] args) {
-        logger.info("同步数据开始===>>>" + DateUtils.parseDateToString(new Date(), DateUtils.DATE_TIME_FORMAT));
-        //System.out.println("1333");
-        DBSyncBuilder.builder().init().start();
-        logger.info("同步数据结束===>>>" + DateUtils.parseDateToString(new Date(), DateUtils.DATE_TIME_FORMAT));
-        //System.out.println("1222222"); 
-    }
+	public static void main(String[] args) {
+		logger.info("同步数据开始===>>>" + DateFormat.getDateInstance(0).format(new Date()).toString());
+		Task.builder().init().start();
+		logger.info("同步数据结束===>>>" + DateFormat.getDateInstance(0).format(new Date()).toString());	
+	}
 }
