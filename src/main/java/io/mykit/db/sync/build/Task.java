@@ -244,10 +244,10 @@ public class Task {
     	    	    			pst1.addBatch(sqlList[index]);
     	    				}
     	    				pst1.executeBatch();
-
-    	    				delIds.deleteCharAt(delIds.length() - 1);
-    	    				Task.logger.info("delete from " + jobInfo.getSrcTable() + " where " + srcFields[0] + " in " + " (" + delIds.toString() + ")");
+    	    				Task.logger.info("目标数据表插入：" + sqlList[1]);
+    	    				delIds.deleteCharAt(delIds.length() - 1);	
     	    				statement.executeUpdate("delete from " + jobInfo.getSrcTable() + " where " + srcFields[0] + " in " + "(" + delIds.toString() + ")");
+    	    				Task.logger.info("删除源数据表数据： delete from " + jobInfo.getSrcTable() + " where " + srcFields[0] + " in " + " (" + delIds.toString() + ")");
     	    				
 
     	    				statement.close();
@@ -255,19 +255,48 @@ public class Task {
     	    				inConn.commit();
     	    				pst1.close();
     	    				
-    	    				
-    	    				if (!rs.next()) {
+    	    				if(rs.next()) {
+    	    					if (!"insert".equals(rs.getString("action"))) {
+        	    					pst.close();
+        	    					rs.close();
+        	    					return newSql;
+        	    				}
+    	    					
+    	    				}else {
     	    					pst.close();
     	    					rs.close();
     	    					return newSql;
-    	    				}
-    	    			
-    	    			logger.debug(sql.toString());
+    	    				}    	    				   	    		
     	    		}
     			}
+    	    		logger.debug(sql.toString());
     		}else if ("delete".equals(rs.getString("action"))) {
-        		//sqlDel.append("delete from ").append(jobInfo.getDestTable()).append(" where ").append(rs.getString("action_sql")).append(";");
-        		sqlDel.append("delete from ").append(jobInfo.getDestTable()).append(" where ").append(jobInfo.getDestTableKey()).append(" in (").append(rs.getString("action_sql")).append(");");
+        		sqlDel.append("delete from ").append(jobInfo.getDestTable()).append(" where ").append(jobInfo.getDestTableKey()).append(" in (").append(rs.getString("action_sql")).append(")");
+        		StringBuffer sqlSrcDel = new StringBuffer();
+				sqlSrcDel.append("delete from ").append(jobInfo.getSrcTable()).append(" where ").append(srcFields[0]).append(" in (").append(rs.getString("ids")).append(")");
+        	    Statement statementIn = inConn.createStatement();
+				Statement statementOut = outConn.createStatement();   		
+	    		//删除之前要判断是否为空
+	    		statementOut.executeUpdate(sqlDel.toString());
+	    		Task.logger.info("删除目标数据库数据： " + sqlDel.toString());	 
+	    		statementIn.executeUpdate(sqlSrcDel.toString());
+	    		Task.logger.info("删除源数据库数据： " + sqlSrcDel.toString());
+	    		statementOut.close();
+	    		if (rs.next()) {
+	    			if(!"delete".equals(rs.getNString("action"))) {
+	    				pst.close();
+						rs.close();
+						outConn.commit();
+						inConn.commit();
+						return sqlDel.toString();
+	    			}					
+				}else {
+					pst.close();
+					rs.close();
+					outConn.commit();
+					inConn.commit();
+					return sqlDel.toString();
+				}
         	}
     		return destTableKey;
     	}
