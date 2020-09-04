@@ -196,7 +196,6 @@ public class Task {
     		String uniqueName = generateString(6) + "_" + jobInfo.getName();
     		String[] destFields = jobInfo.getDestTableFields().split(",");
     		destFields = this.trimArrayItem(destFields);
-    		// 默认的srcFields数组与destFields相同
     		String[] srcFields = destFields;
     		String srcField = jobInfo.getSrcTableFields();
     		if (!isEmpty(srcField)) {
