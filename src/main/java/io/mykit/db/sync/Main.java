@@ -33,6 +33,6 @@ public class Main {
 	public static void main(String[] args) {
 		logger.info("同步数据开始===>>>" + DateFormat.getDateInstance(0).format(new Date()).toString());
 		Task.builder().init().start();
-		logger.info("同步数据结束===>>>" + DateFormat.getDateInstance(0).format(new Date()).toString());	
+		logger.info("同步数据结束===>>>" + DateFormat.getDateInstance(0).format(new Date()).toString());
 	}
 }

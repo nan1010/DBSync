@@ -16,16 +16,6 @@
         <driver>com.mysql.jdbc.Driver</driver>
     </dest>
     <jobs>
-		<!-- <job>
-            <name>1</name>
-            <cron>0/2 * * * * ?</cron>
-            <srcSql>select s.action, GROUP_CONCAT(s.p_id) ids, GROUP_CONCAT(s.action_sql) action_sql from (select * from sync_police_config  where dest_table='record_carinout' LIMIT 20) s GROUP BY s.action</srcSql>
-            <destTable>record_carinout</destTable>
-            <destTableFields>record_id, sys_id, pass_time, car_number, in_out, position, device_id, picture_url, owner_name, owner_tel, out_time, due_time, out_position, out_picture_url</destTableFields>
-            <destTableKey>record_id</destTableKey>
-            <destTableUpdate>sys_id, pass_time, car_number, in_out, position, device_id, picture_url, owner_name, owner_tel, out_time, due_time, out_position, out_picture_url</destTableUpdate>
-        </job> -->
-        
         <job>
             <name>1</name>
             <srcSql>select s.action, GROUP_CONCAT(s.p_id) ids, GROUP_CONCAT(s.action_sql) action_sql from (select * from sync_police_config  where dest_table='tb_gap_data' limit 5) s GROUP BY s.action</srcSql>
@@ -45,7 +35,6 @@
             <destTableFields>id, data_type, data</destTableFields>
             <destTableKey>id</destTableKey>
             <destTableUpdate>id, data_type, data</destTableUpdate>
-        </job>
-        
+        </job>       
     </jobs>
 </root>
