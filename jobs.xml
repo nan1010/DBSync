@@ -31,10 +31,10 @@
             <srcSql>select s.action, GROUP_CONCAT(s.p_id) ids, GROUP_CONCAT(s.action_sql) action_sql from (select * from sync_police_config2  where dest_table='tb_gap_data' limit 5) s GROUP BY s.action</srcSql>
             <srcTable>sync_police_config2</srcTable>
             <srcTableFields>p_id, dest_table, action, action_sql</srcTableFields>
-            <destTable>tb_copy</destTable>
-            <destTableFields>id, data_type, data</destTableFields>
+            <destTable>tb_copy2</destTable>
+            <destTableFields>id, data_type, data, data_desc</destTableFields>
             <destTableKey>id</destTableKey>
-            <destTableUpdate>id, data_type, data</destTableUpdate>
+            <destTableUpdate>id, data_type, data, data_desc</destTableUpdate>
         </job>       
     </jobs>
 </root>
