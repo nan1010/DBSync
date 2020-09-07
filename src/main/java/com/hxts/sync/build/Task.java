@@ -1,22 +1,4 @@
-/**
- * Copyright 2018-2118 the original author or authors.
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package io.mykit.db.sync.build;
-
-import io.mykit.db.sync.entity.DBInfo;
-import io.mykit.db.sync.entity.JobInfo;
+package com.hxts.sync.build;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -33,10 +15,13 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import com.hxts.sync.DBInfo;
+import com.hxts.sync.JobInfo;
+
 /**
- * @author liuyazhuang
- * @date 2018/9/11 10:08
- * @description 同步数据库数据的Builder对象
+ * @author zhaonan
+ * @date 2020/9/7
+ * @description 数据库同步任务类
  * @version 1.0.0
  */
 public class Task {
@@ -113,48 +98,63 @@ public class Task {
 	}
 
 	/**
-	 * 启动定时任务，同步数据库的数据
+	 * 启动定时任务，同步数据库的数据，jobInfo作为参数传递
+	 * 
+	 * @throws InterruptedException
 	 */
-	public void start() {
+	public void start() throws InterruptedException {
+		for (int i = 0; i < jobList.size(); i++) {
+			JobInfo jobInfo = jobList.get(i);
+			new Thread(new JobThread(jobInfo)).start();
+		}
+	}
+	
+	//线程任务类
+	public class JobThread implements Runnable {
+		private JobInfo jobInfo;
 
-		while (true) {
-			try {
-				for (int index = 0; index < jobList.size(); index++) {
-					JobInfo jobInfo = jobList.get(index);
-					Task.logger.info("正在执行第" + index + "个任务");
-					String logTitle = "[" + code + "]" + jobInfo.getName() + " ";
-					Thread.sleep(1000);
-					Task.logger.info("开始任务执行: ");
-					Connection inConn = null;
-					Connection outConn = null;
-					try {
-						inConn = createConnection(srcDb);
-						outConn = createConnection(destDb);
-						if (inConn == null) {
-							Task.logger.info("请检查源数据连接!");
-							return;
-						} else if (outConn == null) {
-							Task.logger.info("请检查目标数据连接!");
-							return;
-						}
-						long start = System.currentTimeMillis();
-						assembleAndExcuteSQLAndDelete(inConn, outConn, jobInfo);
-						Task.logger.info("执行耗时: " + (System.currentTimeMillis() - start) + "ms");
-					} catch (SQLException e) {
-						Task.logger.error(logTitle + e.getMessage());
-						Task.logger.error(logTitle + " SQL执行出错，请检查是否存在语法错误");
-						throw new RuntimeException(logTitle + e.getMessage());
-					} finally {
-						Task.logger.info("关闭源数据库连接");
-						destoryConnection(inConn);
-						Task.logger.info("关闭目标数据库连接");
-						destoryConnection(outConn);
+		JobThread(JobInfo jobInfo) {
+			this.jobInfo = jobInfo;
+		}
+
+		@Override
+		public void run() {
+			while (true) {
+				logger.info("正在执行第" + jobInfo.getName() + "个任务");
+				String logTitle = "[" + code + "]" + jobInfo.getName() + " ";
+				logger.info("开始任务执行: ");
+				Connection inConn = null;
+				Connection outConn = null;
+				try {
+					inConn = createConnection(srcDb);
+					outConn = createConnection(destDb);
+					if (inConn == null) {
+						logger.error("请检查源数据连接!");
+						return;
+					} else if (outConn == null) {
+						logger.error("请检查目标数据连接!");
+						return;
 					}
+					long start = System.currentTimeMillis();
+					assembleAndExcuteSQLAndDelete(inConn, outConn, jobInfo);
+					logger.info("执行耗时: " + (System.currentTimeMillis() - start) + "ms");
+				} catch (SQLException e) {
+					logger.error(logTitle + e.getMessage());
+					logger.error(logTitle + " SQL执行出错，请检查是否存在语法错误");
+					throw new RuntimeException(logTitle + e.getMessage());
+				} finally {
+					logger.info("关闭源数据库连接");
+					destoryConnection(inConn);
+					logger.info("关闭目标数据库连接");
+					destoryConnection(outConn);
 				}
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
 			}
+
 		}
 
 	}
@@ -172,7 +172,7 @@ public class Task {
 			conn.setAutoCommit(false);
 			return conn;
 		} catch (Exception e) {
-			Task.logger.error(e.getMessage());
+			logger.error(e.getMessage());
 		}
 		return null;
 	}
@@ -187,7 +187,6 @@ public class Task {
 			if (conn != null) {
 				conn.close();
 				conn = null;
-				Task.logger.error("连接已关闭");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -247,11 +246,11 @@ public class Task {
 						pst1.addBatch(sqlList[index]);
 					}
 					pst1.executeBatch();
-					Task.logger.info("目标数据表插入：" + sqlList[1]);
+					logger.info("目标数据表插入：" + sqlList[1]);
 					delIds.deleteCharAt(delIds.length() - 1);
 					statement.executeUpdate("delete from " + jobInfo.getSrcTable() + " where " + srcFields[0] + " in "
 							+ "(" + delIds.toString() + ")");
-					Task.logger.info("删除源数据表数据： delete from " + jobInfo.getSrcTable() + " where " + srcFields[0]
+					logger.info("删除源数据表数据： delete from " + jobInfo.getSrcTable() + " where " + srcFields[0]
 							+ " in " + " (" + delIds.toString() + ")");
 
 					statement.close();
@@ -284,9 +283,9 @@ public class Task {
 			Statement statementOut = outConn.createStatement();
 			// 删除之前要判断是否为空
 			statementOut.executeUpdate(sqlDel.toString());
-			Task.logger.info("删除目标数据库数据： " + sqlDel.toString());
+			logger.info("删除目标数据库数据： " + sqlDel.toString());
 			statementIn.executeUpdate(sqlSrcDel.toString());
-			Task.logger.info("删除源数据库数据： " + sqlSrcDel.toString());
+			logger.info("删除源数据库数据： " + sqlSrcDel.toString());
 			statementOut.close();
 			if (rs.next()) {
 				if (!"delete".equals(rs.getNString("action"))) {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.mykit.db.sync.entity;
+package com.hxts.sync;
 
 import java.io.Serializable;
 
