@@ -10,6 +10,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -17,6 +23,8 @@ import org.dom4j.io.SAXReader;
 
 import com.hxts.sync.DBInfo;
 import com.hxts.sync.JobInfo;
+
+import oracle.net.aso.i;
 
 /**
  * @author zhaonan
@@ -102,11 +110,21 @@ public class Task {
 	 * 
 	 * @throws InterruptedException
 	 */
+	/*
+	 * public static ExecutorService newFixedThreadPool(int nThreads, ThreadFactory
+	 * threadFactory) { return new ThreadPoolExecutor(nThreads, nThreads, 0L,
+	 * TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), threadFactory); }
+	 */
 	public void start() throws InterruptedException {
-		for (int i = 0; i < jobList.size(); i++) {
+		ExecutorService fixedThreadPool = Executors.newFixedThreadPool(jobList.size());
+		for(int i = 0; i < jobList.size(); i++){
 			JobInfo jobInfo = jobList.get(i);
-			new Thread(new JobThread(jobInfo)).start();
+			fixedThreadPool.execute(new JobThread(jobInfo));
 		}
+		/*
+		 * for (int i = 0; i < jobList.size(); i++) { JobInfo jobInfo = jobList.get(i);
+		 * new Thread(new JobThread(jobInfo)).start(); }
+		 */
 	}
 	
 	//线程任务类

@@ -33,12 +33,14 @@ public class Main {
 
 	public static void main(String[] args) {
 		logger.info("同步数据开始===>>>" + DateFormat.getDateInstance(0).format(new Date()).toString());
-		try {
-			Task.builder().init().start();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+			try {
+				Task.builder().init().start();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
 		logger.info("同步数据结束===>>>" + DateFormat.getDateInstance(0).format(new Date()).toString());
 	}
 }
