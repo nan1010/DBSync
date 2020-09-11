@@ -12,10 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -23,8 +19,6 @@ import org.dom4j.io.SAXReader;
 
 import com.hxts.sync.DBInfo;
 import com.hxts.sync.JobInfo;
-
-import oracle.net.aso.i;
 
 /**
  * @author zhaonan
@@ -110,24 +104,15 @@ public class Task {
 	 * 
 	 * @throws InterruptedException
 	 */
-	/*
-	 * public static ExecutorService newFixedThreadPool(int nThreads, ThreadFactory
-	 * threadFactory) { return new ThreadPoolExecutor(nThreads, nThreads, 0L,
-	 * TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), threadFactory); }
-	 */
 	public void start() throws InterruptedException {
 		ExecutorService fixedThreadPool = Executors.newFixedThreadPool(jobList.size());
-		for(int i = 0; i < jobList.size(); i++){
+		for (int i = 0; i < jobList.size(); i++) {
 			JobInfo jobInfo = jobList.get(i);
 			fixedThreadPool.execute(new JobThread(jobInfo));
 		}
-		/*
-		 * for (int i = 0; i < jobList.size(); i++) { JobInfo jobInfo = jobList.get(i);
-		 * new Thread(new JobThread(jobInfo)).start(); }
-		 */
 	}
-	
-	//线程任务类
+
+	// 线程任务类
 	public class JobThread implements Runnable {
 		private JobInfo jobInfo;
 
@@ -268,8 +253,8 @@ public class Task {
 					delIds.deleteCharAt(delIds.length() - 1);
 					statement.executeUpdate("delete from " + jobInfo.getSrcTable() + " where " + srcFields[0] + " in "
 							+ "(" + delIds.toString() + ")");
-					logger.info("删除源数据表数据： delete from " + jobInfo.getSrcTable() + " where " + srcFields[0]
-							+ " in " + " (" + delIds.toString() + ")");
+					logger.info("删除源数据表数据： delete from " + jobInfo.getSrcTable() + " where " + srcFields[0] + " in "
+							+ " (" + delIds.toString() + ")");
 
 					statement.close();
 					outConn.commit();
