@@ -22,7 +22,7 @@ import com.hxts.sync.JobInfo;
 
 /**
  * @author zhaonan
- * @date 2020/9/7
+ * @date 2020/9/7 10：10
  * @description 数据库同步任务类
  * @version 1.0.0
  */
@@ -240,7 +240,6 @@ public class Task {
 							.append(uniqueName).append(" unique (").append(destTableKey).append(");")
 							.append(sql.toString()).append(";alter table ").append(destTable).append(" drop index ")
 							.append(uniqueName).toString();
-
 					// 执行SQL语句，删除源数据
 					PreparedStatement pst1 = outConn.prepareStatement("");
 					Statement statement = inConn.createStatement();
