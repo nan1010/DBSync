@@ -254,19 +254,16 @@ public class Task {
 							+ "(" + delIds.toString() + ")");
 					logger.info("删除源数据表数据： delete from " + jobInfo.getSrcTable() + " where " + srcFields[0] + " in "
 							+ " (" + delIds.toString() + ")");
-
 					statement.close();
 					outConn.commit();
 					inConn.commit();
 					pst1.close();
-
 					if (rs.next()) {
 						if (!"insert".equals(rs.getString("action"))) {
 							pst.close();
 							rs.close();
 							return newSql;
 						}
-
 					} else {
 						pst.close();
 						rs.close();

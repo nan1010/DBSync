@@ -15,13 +15,11 @@ import java.util.Date;
  */
 public class Main {
 	private static Logger logger = Logger.getLogger(Task.class);
-
 	public static void main(String[] args) {
 		logger.info("同步数据开始===>>>" + DateFormat.getDateInstance(0).format(new Date()).toString());
 		try {
 			Task.builder().init().start();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+		} catch (InterruptedException e) {			
 			e.printStackTrace();
 		}
 		logger.info("同步数据结束===>>>" + DateFormat.getDateInstance(0).format(new Date()).toString());
