@@ -22,43 +22,43 @@ public class DBInfo implements Serializable {
 	// 数据库驱动
 	private String driver;
 
-	public String getUrl() {
+	final public String getUrl() {
 		return url;
 	}
 
-	public void setUrl(String url) {
+	final public void setUrl(String url) {
 		this.url = url;
 	}
 
-	public String getUsername() {
+	final public String getUsername() {
 		return username;
 	}
 
-	public void setUsername(String username) {
+	final public void setUsername(String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
+	final public String getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
+	final public void setPassword(String password) {
 		this.password = password;
 	}
 
-	public String getDbtype() {
+	final public String getDbtype() {
 		return dbtype;
 	}
 
-	public void setDbtype(String dbtype) {
+	final public void setDbtype(String dbtype) {
 		this.dbtype = dbtype;
 	}
 
-	public String getDriver() {
+	final public String getDriver() {
 		return driver;
 	}
 
-	public void setDriver(String driver) {
+	final public void setDriver(String driver) {
 		this.driver = driver;
 	}
 }

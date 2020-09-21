@@ -88,7 +88,7 @@ public class Task {
 	 */
 	public Object elementInObject(Element e, Object o) throws IllegalArgumentException, IllegalAccessException {
 		Field[] fields = o.getClass().getDeclaredFields();
-		for (int index = 0; index < fields.length; index++) {
+		for (int index = 0, len = fields.length; index < len; index++) {
 			Field item = fields[index];
 			// 当前字段不是serialVersionUID，同时当前字段不包含serialVersionUID
 			if (!"serialVersionUID".equals(item.getName()) && !item.getName().contains("serialVersionUID")) {
@@ -106,7 +106,7 @@ public class Task {
 	 */
 	public void start() throws InterruptedException {
 		ExecutorService fixedThreadPool = Executors.newFixedThreadPool(jobList.size());
-		for (int i = 0; i < jobList.size(); i++) {
+		for (int i = 0, len = jobList.size(); i < len; i++) {
 			JobInfo jobInfo = jobList.get(i);
 			fixedThreadPool.execute(new JobThread(jobInfo));
 		}
@@ -201,22 +201,23 @@ public class Task {
 			throws SQLException {
 		String uniqueName = generateString(6) + "_" + jobInfo.getName();
 		String[] destFields = jobInfo.getDestTableFields().split(",");
-		destFields = this.trimArrayItem(destFields);
+		destFields = Task.trimArrayItem(destFields);
 		String[] srcFields = destFields;
 		String srcField = jobInfo.getSrcTableFields();
 		if (!isEmpty(srcField)) {
-			srcFields = this.trimArrayItem(srcField.split(","));
+			srcFields = Task.trimArrayItem(srcField.split(","));
 		}
 		String[] updateFields = jobInfo.getDestTableUpdate().split(",");
-		updateFields = this.trimArrayItem(updateFields);
+		updateFields = Task.trimArrayItem(updateFields);
 		String destTable = jobInfo.getDestTable();
 		String destTableKey = jobInfo.getDestTableKey();
 
 		PreparedStatement pst = inConn.prepareStatement(jobInfo.getSrcSql());
 		ResultSet rs = pst.executeQuery();
-		StringBuilder sql = new StringBuilder();
+		//预先分配sql语句的StringBuffer长度为300
+		StringBuffer sql = new StringBuffer(300);
 		StringBuffer sqlDel = new StringBuffer();
-		StringBuilder delIds = new StringBuilder();
+		StringBuffer delIds = new StringBuffer();
 
 		if (!rs.next())
 			return null;
@@ -232,7 +233,7 @@ public class Task {
 				sql = sql.deleteCharAt(sql.length() - 1);
 				if ((!isEmpty(jobInfo.getDestTableUpdate())) && (!isEmpty(jobInfo.getDestTableKey()))) {
 					sql.append(" on duplicate key update ");
-					for (int index = 0; index < updateFields.length; index++) {
+					for (int index = 0, len = updateFields.length; index < len; index++) {
 						sql.append(updateFields[index]).append("= values(").append(updateFields[index])
 								.append(index == (updateFields.length - 1) ? ")" : "),");
 					}
@@ -244,7 +245,7 @@ public class Task {
 					PreparedStatement pst1 = outConn.prepareStatement("");
 					Statement statement = inConn.createStatement();
 					String[] sqlList = newSql.split(";");
-					for (int index = 0; index < sqlList.length; index++) {
+					for (int index = 0, len = sqlList.length; index < len; index++) {
 						pst1.addBatch(sqlList[index]);
 					}
 					pst1.executeBatch();
@@ -311,11 +312,11 @@ public class Task {
 	 * @param src 需要去除空格的数组
 	 * @return 去除空格后的数组
 	 */
-	private String[] trimArrayItem(String[] src) {
+	private static String[] trimArrayItem(String[] src) {
 		if (src == null || src.length == 0)
 			return src;
 		String[] dest = new String[src.length];
-		for (int i = 0; i < src.length; i++) {
+		for (int i = 0, len = src.length; i < len; i++) {
 			dest[i] = src[i].trim();
 		}
 		return dest;
